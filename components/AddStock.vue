@@ -10,48 +10,75 @@ import {
     DialogClose
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { PlusCircle } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ref } from 'vue'
-import type { Tables } from '@/types/database.types'
-
-const url = ref<string | null>(null)
+import type { Product } from "~/types/unifi";
+const refreshProducts = inject('refreshProducts') as () => void;
+const url = ref('')
 const loading = ref(false)
-const result = ref<Tables<"products"> | null>(null)
+const open = ref(false)
+const result = ref<Product | null>(null)
 
-const fetchUrl = async () => {
+async function handlePaste(event: ClipboardEvent) {
+    event.preventDefault()
+    const text = event.clipboardData?.getData('text/plain')
+    if (text) {
+        url.value = text
+        await fetchUrl()
+    }
+};
+
+async function fetchUrl() {
     if (!url.value) return
     loading.value = true
-    const data = await $fetch<Tables<"products">>('/api/checkUrl', {
-        method: 'GET',
-        query: {
-            url: url.value
-        }
-    });
-    result.value = data
-    loading.value = false
+    try {
+        const data = await $fetch<Product>('/api/checkUrl', {
+            method: 'GET',
+            query: {
+                url: url.value
+            }
+        });
+        result.value = data
+    } catch (error) {
+        console.error(error)
+    } finally {
+        loading.value = false
+    }
+}
+
+async function addProduct(product: Product) {
+    loading.value = true
+    try {
+        await $fetch('/api/addProduct', {
+            method: 'POST',
+            body: product
+        });
+        open.value = false
+        refreshProducts();
+    } catch (error) {
+        console.error(error)
+    } finally {
+        loading.value = false
+    }
+
 }
 
 function reset() {
     url.value = ''
     result.value = null
+    loading.value = false
 }
 
 
 </script>
 
 <template>
-    <Dialog @update:open="reset">
-        <DialogTrigger>
-            <Button size="sm" class="h-7 gap-1">
-                <PlusCircle class="h-3.5 w-3.5" />
-                <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Add Product
-                </span>
-            </Button>
+    <Dialog @update:open="reset" v-model:open="open">
+        <DialogTrigger class="w-full">
+            <slot name="trigger" />
         </DialogTrigger>
-        <DialogContent class="sm:max-w-md text-white">
+        <DialogContent class="text-white">
             <DialogHeader>
                 <DialogTitle>Add Product</DialogTitle>
                 <DialogDescription>
@@ -63,21 +90,14 @@ function reset() {
                     <Label for="link" class="sr-only">
                         Link
                     </Label>
-                    <Input v-model="url" />
+                    <Input v-model="url" @paste="handlePaste" />
                 </div>
                 <Button type="submit" size="sm" class="px-3" @click="fetchUrl" :disabled="loading">
                     <span>Check</span>
                 </Button>
             </div>
-            <Product v-if="result" :result="result" />
+            <Product v-if="result" :product="result" :loading="loading" @submit="addProduct" />
             <SkeletonProduct v-else-if="loading" />
-            <DialogFooter class="sm:justify-start">
-                <DialogClose as-child>
-                    <Button type="button" variant="secondary">
-                        Close
-                    </Button>
-                </DialogClose>
-            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>

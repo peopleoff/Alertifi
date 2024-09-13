@@ -21,13 +21,30 @@ import {
 } from '@/components/ui/tooltip'
 import type { Tables } from '@/types/database.types'
 
-defineProps<{
-    product?: Tables<"products">[] | null | undefined
-}>()
+interface Props {
+    product: Tables<"products">[] | null | undefined
+    loading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    product: null,
+    loading: false
+})
+const client = useSupabaseClient()
+
+const refreshProducts = inject('refreshProducts') as () => void;
+
+async function deleteProduct(id: number) {
+    const { error } = await client.from('products').delete().eq('id', id)
+    if (error) {
+        console.error(error)
+    }
+    refreshProducts();
+};
 </script>
 
 <template>
-    <Table v-if="product && product.length > 0">
+    <Table>
         <TableHeader>
             <TableRow>
                 <TableHead class="hidden w-[100px] sm:table-cell">
@@ -39,14 +56,15 @@ defineProps<{
                 </TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead class="hidden md:table-cell">
-                    Created at
+                    Last Checked
                 </TableHead>
                 <TableHead>
                     <span class="sr-only">Actions</span>
                 </TableHead>
             </TableRow>
         </TableHeader>
-        <TableBody>
+        <SkeletonProductTable v-if="loading" />
+        <TableBody v-else-if="product && product.length > 0">
             <TableRow v-for="item in product" :key="item.id">
                 <TableCell class="hidden sm:table-cell">
                     <img alt="Product image" v-if="item.image_url" class="aspect-square rounded-md object-cover"
@@ -102,13 +120,11 @@ defineProps<{
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem @click="deleteProduct(item.id)">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </TableCell>
             </TableRow>
-
         </TableBody>
     </Table>
 </template>

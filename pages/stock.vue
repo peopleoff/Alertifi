@@ -6,15 +6,38 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/components/ui/tabs'
+import { PlusCircle } from 'lucide-vue-next'
 const client = useSupabaseClient()
-const { data: product, error } = await useAsyncData('products', async () => {
+const { data: product, error, refresh, status } = await useAsyncData('products', async () => {
     const { data } = await client.from('products').select('*').order('created_at', { ascending: false })
     return data
 })
 
+watch(status, (newStatus) => {
+    switch (newStatus) {
+        case 'pending':
+            loading.value = true
+            break
+        case 'success':
+            loading.value = false
+            break
+        case 'error':
+            loading.value = false
+            break
+    }
+})
+
+const loading = ref(false)
+async function refreshProducts() {
+    await refresh()
+};
+
+provide('refreshProducts', refreshProducts);
+
 const inStock = computed(() => product.value?.filter((item) => item.in_stock && !item.last_text_date))
 const soldOut = computed(() => product.value?.filter((item) => !item.in_stock && !item.last_text_date))
 const complete = computed(() => product.value?.filter((item) => item.last_text_date))
+
 </script>
 
 <template>
@@ -38,7 +61,16 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                             </TabsTrigger>
                         </TabsList>
                         <div class="ml-auto flex items-center gap-2">
-                            <AddStock />
+                            <AddStock>
+                                <template #trigger>
+                                    <Button size="sm" class="h-7 gap-1">
+                                        <PlusCircle class="h-3.5 w-3.5" />
+                                        <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                            Add Product
+                                        </span>
+                                    </Button>
+                                </template>
+                            </AddStock>
                         </div>
                     </div>
                     <TabsContent value="all">
@@ -50,7 +82,17 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ProductTable :product="product" />
+                                <AddStock v-if="!product || product.length === 0">
+                                    <template #trigger>
+                                        <button type="button"
+                                            class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                            <img src="https://cdn.prod.website-files.com/622b70d8906c7ab0c03f77f8/63b40a92093c6b2f3767e4e6_tMCv8T-y_400x400.webp"
+                                                class="mx-auto h-12 w-12 rounded-md">
+                                            <span class="mt-2 block text-sm font-semibold">Start tracking</span>
+                                        </button>
+                                    </template>
+                                </AddStock>
+                                <ProductTable v-else :product="product" :loading="loading" />
                             </CardContent>
                         </Card>
                     </TabsContent>

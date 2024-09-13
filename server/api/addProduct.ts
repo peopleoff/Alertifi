@@ -12,7 +12,8 @@ export default eventHandler(async (event) => {
     description: body.description,
     price: body.offers?.priceSpecification?.price,
     image_url: body.image.url,
-    in_stock: false,
+    in_stock: body.inStock,
+    last_checked_date: new Date().toISOString(),
     sku: body.sku,
   };
 

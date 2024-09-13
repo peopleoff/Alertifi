@@ -18,6 +18,13 @@ import {
 } from '@/components/ui/pin-input'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+
+useSeoMeta({
+    titleTemplate(title) {
+        return `${title} - Verify OTP`
+    },
+})
+
 const { toast } = useToast()
 const supabase = useSupabaseClient()
 const route = useRoute()

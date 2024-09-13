@@ -7,6 +7,13 @@ import {
     TabsTrigger,
 } from '@/components/ui/tabs'
 import { PlusCircle } from 'lucide-vue-next'
+
+useSeoMeta({
+    titleTemplate(title) {
+        return `${title} - Stock`
+    },
+})
+
 const client = useSupabaseClient()
 const { data: product, error, refresh, status } = await useAsyncData('products', async () => {
     const { data } = await client.from('products').select('*').order('created_at', { ascending: false })

@@ -3,17 +3,16 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogClose
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ref } from 'vue'
 import type { Product } from "~/types/unifi";
+import { toast } from './ui/toast'
 const refreshProducts = inject('refreshProducts') as () => void;
 const url = ref('')
 const loading = ref(false)
@@ -32,6 +31,7 @@ async function handlePaste(event: ClipboardEvent) {
 async function fetchUrl() {
     if (!url.value) return
     loading.value = true
+    result.value = null
     try {
         const data = await $fetch<Product>('/api/checkUrl', {
             method: 'GET',
@@ -42,8 +42,14 @@ async function fetchUrl() {
         result.value = data
     } catch (error) {
         console.error(error)
+        toast({
+            title: 'Something went wrong.',
+            description: 'Error fetching product. Please try again.',
+            variant: 'destructive'
+        });
     } finally {
         loading.value = false
+        url.value = ''
     }
 }
 

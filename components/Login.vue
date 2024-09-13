@@ -58,11 +58,11 @@ const signInWithOtp = async (phoneNumber: string) => {
 <template>
     <form @submit="onSubmit" class="w-full">
         <div class="flex w-full max-w-sm items-center gap-1.5">
-            <FormField v-slot="{ componentField }" name="phone" >
+            <FormField v-slot="{ componentField }" name="phone">
                 <FormItem class="w-full">
                     <FormControl>
-                        <Input id="phone" class="text-white" type="text" placeholder="(941)-234-3432"
-                            v-bind="componentField" v-maska="'(###)-###-####'" />
+                        <Input id="phone" class="text-white" type="tel" placeholder="(941)-234-3432"
+                            autocomplete="tel" v-bind="componentField" v-maska="'(###)-###-####'" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

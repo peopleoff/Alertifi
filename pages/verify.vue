@@ -92,7 +92,7 @@ async function verify(code: string) {
                                         }">
                                         <PinInputGroup>
                                             <PinInputInput class="bg-background" v-for="(id, index) in 6" :key="id"
-                                                :index="index" />
+                                                :autofocus="index === 0" :index="index" />
                                         </PinInputGroup>
                                     </PinInput>
                                 </FormControl>

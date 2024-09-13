@@ -1,10 +1,10 @@
 import { parse } from "node-html-parser";
 import { Product, ProductGroup } from "~/types/unifi";
-
+import { useToast } from '@/components/ui/toast/use-toast'
 function getProductFromGroup(productGroup: ProductGroup, url: string) {
   const variant = url.split("?variant=")[1];
   const product = productGroup.hasVariant.find((product) => {
-    return product.sku.toLowerCase() == variant.toLowerCase();
+    return product.sku.toLowerCase() == variant?.toLowerCase();
   });
   if (!product) {
     return productGroup.hasVariant[0];

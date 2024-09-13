@@ -23,8 +23,8 @@ const addProduct = async () => {
 
 <template>
     <div v-if="product" class="flex flex-col gap-1">
-        <div class="flex gap-4 w-full items-start gap-x-6 gap-y-8 lg:gap-x-8">
-            <div class="overflow-hidden rounded-lg w-56">
+        <div class="flex flex-col md:flex-row gap-0 md:gap-4 w-full items-center">
+            <div class="overflow-hidden rounded-lg w-36 md:w-full">
                 <img :src="product.image.url" alt="Back angled view with bag open and handles to the side."
                     class="object-cover object-center">
             </div>

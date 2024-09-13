@@ -13,6 +13,7 @@
   "dependencies": {
     "@nuxtjs/supabase": "^1.4.0",
     "@supabase/supabase-js": "^2.45.4",
+    "@vee-validate/zod": "^4.13.2",
     "@vueuse/core": "^11.0.3",
     "@vueuse/nuxt": "^11.0.3",
     "class-variance-authority": "^0.7.0",
@@ -25,8 +26,10 @@
     "shadcn-nuxt": "^0.10.4",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.13.2",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@nuxtjs/color-mode": "^3.4.4",

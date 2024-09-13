@@ -1,39 +1,52 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import {
+    Smartphone,
+    ShoppingCart
+} from 'lucide-vue-next'
 </script>
 
 <template>
-    <div class="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32 flex items-center h-screen">
+    <div class="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32 flex items-center min-h-screen">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-                <div class="max-w-xl lg:max-w-lg">
-                    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Subscribe to our newsletter.
-                    </h2>
-                    <p class="mt-4 text-lg leading-8 text-gray-300">Nostrud amet eu ullamco nisi aute in ad minim
-                        nostrud adipisicing velit quis. Duis tempor incididunt dolore.</p>
-                    <div class="mt-6 flex max-w-md gap-x-4">
+            <div class="mx-auto grid max-w-2xl items-center grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
+                <div class="max-w-xl lg:max-w-lg flex flex-col gap-6">
+                    <div>
+                        <Badge variant="outline">
+                            Stay Ahead of the Crowd
+                        </Badge>
+                    </div>
+
+                    <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        Get Stock Updates for Unifi Products
+                    </h1>
+                    <p class="text-lg leading-8 text-gray-300">Sign up, add the Unifi products you want, and get a
+                        text the moment they are available again. No more checking stock manually.</p>
+                    <div class="flex max-w-md gap-x-4 w-full">
                         <Login />
                     </div>
                 </div>
-                <dl class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
-                    <div class="flex flex-col items-start">
-                        <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-
+                <div>
+                    <dl class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
+                        <div class="flex flex-col items-start">
+                            <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
+                                <Smartphone class="h-4 w-4 text-white" />
+                            </div>
+                            <dt class="mt-4 font-semibold text-white">Real-time Stock Alerts</dt>
+                            <dd class="mt-2 leading-7 text-gray-400">Receive immediate text notifications when your
+                                desired
+                                Unifi products are back in stock.</dd>
                         </div>
-                        <dt class="mt-4 font-semibold text-white">Weekly articles</dt>
-                        <dd class="mt-2 leading-7 text-gray-400">Non laboris consequat cupidatat laborum magna. Eiusmod
-                            non irure cupidatat duis commodo amet.</dd>
-                    </div>
-                    <div class="flex flex-col items-start">
-                        <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-
+                        <div class="flex flex-col items-start">
+                            <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
+                                <ShoppingCart class="h-4 w-4 text-white" />
+                            </div>
+                            <dt class="mt-4 font-semibold text-white">Easy Product Tracking</dt>
+                            <dd class="mt-2 leading-7 text-gray-400">Add products to your personal list and let us do
+                                the
+                                stock monitoring for you.</dd>
                         </div>
-                        <dt class="mt-4 font-semibold text-white">No spam</dt>
-                        <dd class="mt-2 leading-7 text-gray-400">Officia excepteur ullamco ut sint duis proident non
-                            adipisicing. Voluptate incididunt anim.</dd>
-                    </div>
-                </dl>
+                    </dl>
+                </div>
             </div>
         </div>
         <div class="absolute left-1/2 top-0 -z-10 -translate-x-1/2 blur-3xl xl:-top-6" aria-hidden="true">

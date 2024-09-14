@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Toaster from '@/components/ui/toast/Toaster.vue'
+import { ConfigProvider } from 'radix-vue';
 useSeoMeta({
   title: 'Ubiquiti  Stock Checker',
   description: 'Check the stock of Ubiquiti  products and get notified when they are in stock.',
@@ -24,17 +25,23 @@ useHead({
     }
   ]
 })
+
+const useIdFunction = () => useId() || '';
 </script>
 
 <template>
-  <div>
-    <NuxtPage />
-    <Toaster />
-  </div>
+  <ConfigProvider :use-id="useIdFunction">
+    <div>
+      <Navigation />
+      <NuxtPage />
+      <Toaster />
+    </div>
+  </ConfigProvider>
 </template>
 
 <style>
 body {
-  @apply bg-background;
+  @apply bg-background/90;
+  @apply text-white;
 }
 </style>

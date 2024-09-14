@@ -62,9 +62,9 @@ const signInWithOtp = async (phoneNumber: string) => {
                 <FormItem class="w-full">
                     <FormControl>
                         <Input id="phone" class="text-white" type="tel" placeholder="(941)-234-3432"
-                            autocomplete="tel" v-bind="componentField" v-maska="'(###)-###-####'" />
+                            autocomplete="mobile" v-bind="componentField" v-maska="'(###)-###-####'" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage class="absolute pl-1" />
                 </FormItem>
             </FormField>
             <Button type="submit" class="w-28" :disabled="loading">

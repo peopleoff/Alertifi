@@ -2,7 +2,6 @@
 import {
     MoreHorizontal,
 } from 'lucide-vue-next'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import {
@@ -19,6 +18,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useToast } from '@/components/ui/toast/use-toast'
+import { format } from "date-fns";
+import { Checkbox } from '@/components/ui/checkbox'
 import type { Tables } from '@/types/database.types'
 
 interface Props {
@@ -30,9 +32,12 @@ const props = withDefaults(defineProps<Props>(), {
     product: null,
     loading: false
 })
+const notifyCount = useNotifyCount()
 const client = useSupabaseClient()
-
+const { toast } = useToast()
 const refreshProducts = inject('refreshProducts') as () => void;
+
+const checkboxLoading = ref(false);
 
 async function deleteProduct(id: number) {
     const { error } = await client.from('products').delete().eq('id', id)
@@ -41,6 +46,51 @@ async function deleteProduct(id: number) {
     }
     refreshProducts();
 };
+
+async function notifyProduct(checked: boolean, id: number) {
+    const item = props.product?.find(product => product.id === id);
+    if (!item) {
+        return;
+    }
+    //If user is trying to add another product, but already has 3 items. Stop being the network call.
+    if (notifyCount.value >= 3 && checked) {
+        return toast({
+            title: 'Max number of products selected',
+            description: 'You can only have 3 products selected for notification at a time',
+            variant: 'destructive',
+            duration: 2500
+        });
+    }
+    checkboxLoading.value = true;
+    try {
+        const { count } = await $fetch('/api/notifyProduct', {
+            method: 'POST',
+            body: {
+                checked, id
+            }
+        });
+        notifyCount.value = count;
+        item.notify = checked;
+    } catch (error) {
+        item.notify = false;
+        toast({
+            title: 'Max number of products selected',
+            description: 'You can only have 3 products selected for notification at a time',
+            variant: 'destructive',
+            duration: 2500
+        });
+    } finally {
+        checkboxLoading.value = false;
+    }
+}
+
+function inNull(value: any) {
+    if (value) {
+        return true
+    } else {
+        return false;
+    }
+}
 </script>
 
 <template>
@@ -57,6 +107,9 @@ async function deleteProduct(id: number) {
                 <TableHead>Status</TableHead>
                 <TableHead class="hidden md:table-cell">
                     Last Checked
+                </TableHead>
+                <TableHead class="table-cell">
+                    Notify Me
                 </TableHead>
                 <TableHead>
                     <span class="sr-only">Actions</span>
@@ -84,12 +137,7 @@ async function deleteProduct(id: number) {
                     <PriceDisplay :price="item.price" />
                 </TableCell>
                 <TableCell>
-                    <Badge v-if="item.last_text_date" variant="complete">
-                        Complete
-                    </Badge>
-                    <Badge v-else class="text-xs" :variant="item.in_stock ? 'default' : 'outline'">
-                        {{ item.in_stock ? 'In stock' : 'Sold Out' }}
-                    </Badge>
+                    <StockBadge :in-stock="item.in_stock" :last-text-date="item.last_text_date" />
                 </TableCell>
 
                 <TableCell class="hidden md:table-cell">
@@ -102,13 +150,18 @@ async function deleteProduct(id: number) {
                             </TooltipTrigger>
 
                             <TooltipContent>
-                                {{ item.last_checked_date }}
+                                {{ format(item.last_checked_date, 'MM/dd/yy HH:mm:ss aaa') }}
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                     <div v-else>
                         Never
                     </div>
+                </TableCell>
+                <TableCell>
+                    <Checkbox :disabled="(checkboxLoading || inNull(item.last_text_date) && !item.notify)"
+                        :checked="item.notify" @update:checked="notifyProduct($event, item.id)"
+                        :loading="checkboxLoading" />
                 </TableCell>
                 <TableCell>
                     <DropdownMenu>

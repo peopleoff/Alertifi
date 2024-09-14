@@ -7,7 +7,8 @@ import {
     TabsTrigger,
 } from '@/components/ui/tabs'
 import { PlusCircle } from 'lucide-vue-next'
-
+const notifyCount = useNotifyCount()
+const products = useProducts();
 useSeoMeta({
     titleTemplate(title) {
         return `${title} - Stock`
@@ -17,6 +18,8 @@ useSeoMeta({
 const client = useSupabaseClient()
 const { data: product, error, refresh, status } = await useAsyncData('products', async () => {
     const { data } = await client.from('products').select('*').order('created_at', { ascending: false })
+    notifyCount.value = data?.filter(data => data.notify).length || 0;
+    products.value = data;
     return data
 })
 
@@ -48,10 +51,16 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
 </script>
 
 <template>
-    <div class="flex min-h-screen w-full flex-col bg-muted/40">
+    <div class="flex w-full flex-col bg-muted/40">
         <div class="flex flex-col sm:gap-4 sm:py-4">
             <main class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-                <Tabs default-value="all">
+                <div class="space-y-2">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="scroll-m-20 text-4xl font-bold tracking-tight">Products</h1>
+                    </div>
+                    <p class="text-lg text-muted-foreground">Displays a callout for user attention.</p>
+                </div>
+                <Tabs default-value="all" class="overflow-hidden">
                     <div class="flex items-center">
                         <TabsList>
                             <TabsTrigger value="all">
@@ -63,21 +72,20 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                             <TabsTrigger value="soldOut">
                                 Sold Out
                             </TabsTrigger>
-                            <TabsTrigger value="complete">
-                                Complete
-                            </TabsTrigger>
                         </TabsList>
                         <div class="ml-auto flex items-center gap-2">
-                            <AddStock>
-                                <template #trigger>
-                                    <Button size="sm" class="h-7 gap-1">
-                                        <PlusCircle class="h-3.5 w-3.5" />
-                                        <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                            Add Product
-                                        </span>
-                                    </Button>
-                                </template>
-                            </AddStock>
+                            <ClientOnly>
+                                <AddStock>
+                                    <template #trigger>
+                                        <Button size="sm" class="h-7 gap-1">
+                                            <PlusCircle class="h-3.5 w-3.5" />
+                                            <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                                Add Product
+                                            </span>
+                                        </Button>
+                                    </template>
+                                </AddStock>
+                            </ClientOnly>
                         </div>
                     </div>
                     <TabsContent value="all">
@@ -126,19 +134,6 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                             </CardHeader>
                             <CardContent>
                                 <ProductTable :product="inStock" />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                    <TabsContent value="complete">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Complete</CardTitle>
-                                <CardDescription>
-                                    Products that are complete.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ProductTable :product="complete" />
                             </CardContent>
                         </Card>
                     </TabsContent>

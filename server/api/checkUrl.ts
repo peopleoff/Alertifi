@@ -1,6 +1,5 @@
 import { parse } from "node-html-parser";
 import { Product, ProductGroup } from "~/types/unifi";
-import { useToast } from '@/components/ui/toast/use-toast'
 function getProductFromGroup(productGroup: ProductGroup, url: string) {
   const variant = url.split("?variant=")[1];
   const product = productGroup.hasVariant.find((product) => {
@@ -23,7 +22,7 @@ export default defineEventHandler(async (event) => {
   if (!jsonLdScript) {
     return createError({
       statusCode: 404,
-      statusMessage: "Product not found",
+      message: "Product not found",
     });
   }
   let product: Product;
@@ -43,7 +42,7 @@ export default defineEventHandler(async (event) => {
     console.error("Error parsing JSON-LD:", error);
     throw createError({
       statusCode: 500,
-      statusMessage: "Error parsing product data",
+      message: "Error parsing product data",
     });
   }
   return product;

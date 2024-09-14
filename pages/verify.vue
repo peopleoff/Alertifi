@@ -31,11 +31,12 @@ const route = useRoute()
 const phone = route.query.phone
 const loading = ref(false);
 const formSchema = toTypedSchema(z.object({
-    code: z.array(z.coerce.string()).length(6, { message: 'Invalid input' }),
+    code: z.array(z.coerce.string()).length(6, { message: 'Must be 6 digits' }),
 }))
 
 const form = useForm({
     validationSchema: formSchema,
+    validateOnMount: false,
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -61,7 +62,8 @@ async function verify(code: string) {
         toast({
             title: 'Something went wrong.',
             description: error.message,
-            variant: 'destructive'
+            variant: 'destructive',
+            duration: 2000
         });
     }
 }
@@ -88,7 +90,11 @@ async function verify(code: string) {
                                     <PinInput id="pin-input" v-model="value!" placeholder="○"
                                         class="flex gap-2 items-center mt-1 otp bg-background" type="number"
                                         :name="componentField.name" @complete="handleComplete" @update:model-value="(arrStr) => {
-                                            form.setFieldValue('code', arrStr.filter(Boolean))
+                                            form.setFieldValue('code', arrStr.filter(Boolean)), {
+                                                validate: false,
+                                                shouldValidate: false,
+                                                shouldDirty: false,
+                                            }
                                         }">
                                         <PinInputGroup>
                                             <PinInputInput class="bg-background" v-for="(id, index) in 6" :key="id"

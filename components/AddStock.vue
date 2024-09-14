@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { createReusableTemplate, useMediaQuery } from '@vueuse/core'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
     DialogContent,
@@ -7,36 +10,55 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ref } from 'vue'
-import type { Product } from "~/types/unifi";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from '@/components/ui/drawer'
 import { toast } from './ui/toast'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import {
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form'
+import type { Product } from '~/types/unifi'
+import { Terminal } from 'lucide-vue-next'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+// Reuse `form` section
+const [UseTemplate, GridForm] = createReusableTemplate()
+const isDesktop = useMediaQuery('(min-width: 500px)')
+const notifyCount = useNotifyCount()
 const refreshProducts = inject('refreshProducts') as () => void;
-const url = ref('')
 const loading = ref(false)
 const open = ref(false)
 const result = ref<Product | null>(null)
 
 async function handlePaste(event: ClipboardEvent) {
-    event.preventDefault()
     const text = event.clipboardData?.getData('text/plain')
     if (text) {
-        url.value = text
-        await fetchUrl()
+        await onSubmit()
     }
 };
 
-async function fetchUrl() {
-    if (!url.value) return
+async function fetchUrl(url: string) {
     loading.value = true
     result.value = null
     try {
         const data = await $fetch<Product>('/api/checkUrl', {
             method: 'GET',
             query: {
-                url: url.value
+                url: url
             }
         });
         result.value = data
@@ -49,9 +71,25 @@ async function fetchUrl() {
         });
     } finally {
         loading.value = false
-        url.value = ''
     }
 }
+
+const formSchema = toTypedSchema(z.object({
+    url: z.string()
+        .url()
+        .refine((val) => val.includes('store.ui.com'), {
+            message: 'URL must include "store.ui.com"',
+        })
+}))
+
+const { handleSubmit } = useForm({
+    validationSchema: formSchema,
+    validateOnMount: false,
+})
+
+const onSubmit = handleSubmit((values) => {
+    fetchUrl(values.url)
+})
 
 async function addProduct(product: Product) {
     loading.value = true
@@ -71,7 +109,6 @@ async function addProduct(product: Product) {
 }
 
 function reset() {
-    url.value = ''
     result.value = null
     loading.value = false
 }
@@ -80,30 +117,76 @@ function reset() {
 </script>
 
 <template>
-    <Dialog @update:open="reset" v-model:open="open">
-        <DialogTrigger class="w-full">
+    <UseTemplate>
+        <form @submit="onSubmit">
+            <Input type="text" class="hidden" />
+            <FormField v-slot="{ componentField }" name="url" :validate-on-blur="false">
+                <FormItem>
+                    <FormLabel>Product Url</FormLabel>
+                    <div class="flex gap-4">
+                        <FormControl>
+                            <Input type="text"
+                                placeholder="https://store.ui.com/us/en/category/digital-signage/products/uc-display21"
+                                v-bind="componentField" @paste="handlePaste" @focus="$event.target.select()" />
+                        </FormControl>
+                        <Button type="submit" :disabled="loading">
+                            Check Item
+                        </Button>
+                    </div>
+                    <FormMessage />
+                </FormItem>
+            </FormField>
+        </form>
+        <Alert class="mt-6" v-if="!result && notifyCount >= 3 && !loading">
+            <Terminal class="h-4 w-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+                You've reached your notification limit. The product will be added but won't notify. Upgrade for
+                unlimited notifications!
+            </AlertDescription>
+        </Alert>
+        <Product v-if="result" :product="result" :loading="loading" @submit="addProduct" />
+        <SkeletonProduct v-else-if="loading" />
+    </UseTemplate>
+
+    <Dialog v-if="isDesktop" v-model:open="open" @update:open="reset">
+        <DialogTrigger as-child>
             <slot name="trigger" />
         </DialogTrigger>
-        <DialogContent class="text-white">
+        <DialogContent>
             <DialogHeader>
-                <DialogTitle>Add Product</DialogTitle>
+                <DialogTitle>Add Product URL</DialogTitle>
                 <DialogDescription>
-                    Add a product to your stock.
+                    Paste in the unifi product url
                 </DialogDescription>
             </DialogHeader>
-            <div class="flex items-center space-x-2">
-                <div class="grid flex-1 gap-2">
-                    <Label for="link" class="sr-only">
-                        Link
-                    </Label>
-                    <Input v-model="url" @paste="handlePaste" />
-                </div>
-                <Button type="submit" size="sm" class="px-3" @click="fetchUrl" :disabled="loading">
-                    <span>Check</span>
-                </Button>
+            <div>
+                <GridForm />
             </div>
-            <Product v-if="result" :product="result" :loading="loading" @submit="addProduct" />
-            <SkeletonProduct v-else-if="loading" />
         </DialogContent>
     </Dialog>
+
+    <Drawer v-else v-model:open="open" @update:open="reset">
+        <DrawerTrigger as-child>
+            <slot name="trigger" />
+        </DrawerTrigger>
+        <DrawerContent class="min-h-[75vh]">
+            <DrawerHeader>
+                <DrawerTitle>Add Product URL</DrawerTitle>
+                <DrawerDescription>
+                    Paste in the unifi product url
+                </DrawerDescription>
+            </DrawerHeader>
+            <div class="px-4">
+                <GridForm />
+            </div>
+            <DrawerFooter>
+                <DrawerClose as-child>
+                    <Button variant="outline">
+                        Cancel
+                    </Button>
+                </DrawerClose>
+            </DrawerFooter>
+        </DrawerContent>
+    </Drawer>
 </template>

@@ -6,10 +6,7 @@ export default eventHandler(async (event) => {
   const body = await readBody(event);
   const NUMBER_OF_NOTIFY_PRODUCTS = 3;
   let count = await getNotifyCount(event);
-  throw createError({
-    statusCode: 500,
-    message: "error",
-  });
+  
   if (count >= NUMBER_OF_NOTIFY_PRODUCTS && body.checked) {
     throw createError({
       statusCode: 403,

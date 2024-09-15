@@ -12,14 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { useToast } from '@/components/ui/toast/use-toast'
-import { format } from "date-fns";
 import { Checkbox } from '@/components/ui/checkbox'
 import type { Tables } from '@/types/database.types'
 
@@ -105,9 +98,6 @@ function inNull(value: any) {
                     Price
                 </TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead class="hidden md:table-cell">
-                    Last Checked
-                </TableHead>
                 <TableHead class="table-cell">
                     Notify Me
                 </TableHead>
@@ -123,7 +113,7 @@ function inNull(value: any) {
                     <img alt="Product image" v-if="item.image_url" class="aspect-square rounded-md object-cover"
                         height="64" :src="item.image_url" width="64">
                 </TableCell>
-                <TableCell class="text-white">
+                <TableCell>
                     <div class="font-medium underline decoration-dashed">
                         <NuxtLink :to="item.url" external>
                             {{ item.title }}
@@ -138,25 +128,6 @@ function inNull(value: any) {
                 </TableCell>
                 <TableCell>
                     <StockBadge :in-stock="item.in_stock" :last-text-date="item.last_text_date" />
-                </TableCell>
-
-                <TableCell class="hidden md:table-cell">
-                    <TooltipProvider v-if="item.last_checked_date" :delayDuration="100">
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <div class="underline decoration-dashed">
-                                    {{ useTimeAgo(new Date(item.last_checked_date)) }}
-                                </div>
-                            </TooltipTrigger>
-
-                            <TooltipContent>
-                                {{ format(item.last_checked_date, 'MM/dd/yy HH:mm:ss aaa') }}
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <div v-else>
-                        Never
-                    </div>
                 </TableCell>
                 <TableCell>
                     <Checkbox :disabled="(checkboxLoading || inNull(item.last_text_date) && !item.notify)"

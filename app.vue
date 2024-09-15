@@ -41,7 +41,13 @@ const useIdFunction = () => useId() || '';
 
 <style>
 body {
-  @apply bg-background/90;
-  @apply text-white;
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
 }
 </style>

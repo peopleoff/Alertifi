@@ -1,29 +1,10 @@
 <script setup lang="ts">
 import type { Product } from '~/types/unifi';
-import { Loader2 } from 'lucide-vue-next'
 
 interface Props {
     product: Product
-    loading?: boolean
 }
-const products = useProducts();
-const props = withDefaults(defineProps<Props>(), {
-    loading: false
-})
-
-const emit = defineEmits({
-    "submit": (product: Product) => {
-        return typeof product === 'object' && product !== null
-    }
-});
-
-const addProduct = async () => {
-    emit('submit', props.product)
-}
-
-const itemAlreadyInProducts = computed(() => {
-    return products.value.find(item => item.sku == props.product.sku)
-})
+defineProps<Props>()
 </script>
 
 <template>
@@ -41,21 +22,10 @@ const itemAlreadyInProducts = computed(() => {
                     <PriceDisplay :price="product.offers?.priceSpecification?.price" />
                     <div class="mt-6">
                         <h4 class="sr-only">Description</h4>
-
                         <p class="text-sm">{{ product.description }}</p>
                     </div>
                 </section>
-                <section aria-labelledby="options-heading" class="mt-6">
-                    <h3 id="options-heading" class="sr-only">Product options</h3>
-
-                </section>
             </div>
-        </div>
-        <div class="mb-2">
-            <Button type="submit" class="w-full" @click="addProduct" :disabled="loading || itemAlreadyInProducts">
-                <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-                {{itemAlreadyInProducts ? 'Item Already Added' : 'Add'}}
-            </Button>
         </div>
     </div>
 </template>

@@ -20,10 +20,6 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '@/components/ui/drawer'
-import { toast } from './ui/toast'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 import {
     FormControl,
     FormDescription,
@@ -33,16 +29,19 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import type { Product } from '~/types/unifi'
-import { Terminal } from 'lucide-vue-next'
+import { Terminal, Loader2 } from 'lucide-vue-next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useFetchProduct } from '~/composables/useFetchProduct'
 // Reuse `form` section
+const user = useSupabaseUser()
 const [UseTemplate, GridForm] = createReusableTemplate()
+const [FooterTemplate, UseFooterTemplate] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 500px)')
 const notifyCount = useNotifyCount()
-const refreshProducts = inject('refreshProducts') as () => void;
-const loading = ref(false)
 const open = ref(false)
-const result = ref<Product | null>(null)
+const productState = useProducts();
+const { loading, result, fetchUrl } = useFetchProduct()
+const { handleSubmit } = useProductFormValidation()
 
 async function handlePaste(event: ClipboardEvent) {
     const text = event.clipboardData?.getData('text/plain')
@@ -51,61 +50,22 @@ async function handlePaste(event: ClipboardEvent) {
     }
 };
 
-async function fetchUrl(url: string) {
-    loading.value = true
-    result.value = null
-    try {
-        const data = await $fetch<Product>('/api/checkUrl', {
-            method: 'GET',
-            query: {
-                url: url
-            }
-        });
-        result.value = data
-    } catch (error) {
-        console.error(error)
-        toast({
-            title: 'Something went wrong.',
-            description: 'Error fetching product. Please try again.',
-            variant: 'destructive'
-        });
-    } finally {
-        loading.value = false
-    }
-}
-
-const formSchema = toTypedSchema(z.object({
-    url: z.string()
-        .url()
-        .refine((val) => val.includes('store.ui.com'), {
-            message: 'URL must include "store.ui.com"',
-        })
-}))
-
-const { handleSubmit } = useForm({
-    validationSchema: formSchema,
-    validateOnMount: false,
+const onSubmit = handleSubmit(async (values) => {
+    await fetchUrl(values.url)
+    productState.value.tempProduct = result.value;
 })
 
-const onSubmit = handleSubmit((values) => {
-    fetchUrl(values.url)
-})
-
-async function addProduct(product: Product) {
-    loading.value = true
-    try {
-        await $fetch('/api/addProduct', {
-            method: 'POST',
-            body: product
-        });
-        open.value = false
-        refreshProducts();
-    } catch (error) {
-        console.error(error)
-    } finally {
-        loading.value = false
+const emit = defineEmits({
+    "submit": (product: Product) => {
+        return typeof product === 'object' && product !== null
     }
+});
 
+function addProduct() {
+    if (result.value) {
+        emit("submit", result.value)
+        open.value = false;
+    }
 }
 
 function reset() {
@@ -113,10 +73,21 @@ function reset() {
     loading.value = false
 }
 
-
+const itemAlreadyInProducts = computed(() => {
+    return productState.value.products.find(item => item.sku == result.value?.sku);
+})
 </script>
 
 <template>
+    <FooterTemplate>
+        <div class="w-full" v-if="user">
+            <Button type="submit" class="w-full" :disabled="loading || itemAlreadyInProducts" @click="addProduct">
+                <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+                {{ itemAlreadyInProducts ? 'Item Already Added' : 'Add' }}
+            </Button>
+        </div>
+        <Login v-else />
+    </FooterTemplate>
     <UseTemplate>
         <form @submit="onSubmit">
             <Input type="text" class="hidden" />
@@ -145,7 +116,7 @@ function reset() {
                 unlimited notifications!
             </AlertDescription>
         </Alert>
-        <Product v-if="result" :product="result" :loading="loading" @submit="addProduct" />
+        <Product v-if="result" :product="result" :loading="loading" />
         <SkeletonProduct v-else-if="loading" />
     </UseTemplate>
 
@@ -163,6 +134,9 @@ function reset() {
             <div>
                 <GridForm />
             </div>
+            <DialogFooter class="w-full" v-if="result">
+                <UseFooterTemplate />
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 
@@ -181,11 +155,7 @@ function reset() {
                 <GridForm />
             </div>
             <DrawerFooter>
-                <DrawerClose as-child>
-                    <Button variant="outline">
-                        Cancel
-                    </Button>
-                </DrawerClose>
+                <UseFooterTemplate />
             </DrawerFooter>
         </DrawerContent>
     </Drawer>

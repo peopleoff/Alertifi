@@ -1,57 +1,54 @@
 <script setup lang="ts">
-import {
-    Smartphone,
-    ShoppingCart
-} from 'lucide-vue-next'
+
+const login = ref(false);
 </script>
 
 <template>
-    <div class="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32 flex items-center min-h-screen">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="mx-auto grid max-w-2xl items-center grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-                <div class="max-w-xl lg:max-w-lg flex flex-col gap-6">
-                    <div>
-                        <Badge variant="outline">
-                            Stay Ahead of the Crowd
-                        </Badge>
-                    </div>
-
-                    <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                        Get Stock Updates for Unifi Products
-                    </h1>
-                    <p class="text-lg leading-8 text-gray-300">Sign up, add the Unifi products you want, and get a
-                        text the moment they are available again. No more checking stock manually.</p>
-                    <div class="flex max-w-md gap-x-4 w-full">
-                        <Login />
-                    </div>
-                </div>
-                <div>
-                    <dl class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
-                        <div class="flex flex-col items-start">
-                            <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-                                <Smartphone class="h-4 w-4 text-white" />
-                            </div>
-                            <dt class="mt-4 font-semibold text-white">Real-time Stock Alerts</dt>
-                            <dd class="mt-2 leading-7 text-gray-400">Receive immediate text notifications when your
-                                desired
-                                Unifi products are back in stock.</dd>
-                        </div>
-                        <div class="flex flex-col items-start">
-                            <div class="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
-                                <ShoppingCart class="h-4 w-4 text-white" />
-                            </div>
-                            <dt class="mt-4 font-semibold text-white">Easy Product Tracking</dt>
-                            <dd class="mt-2 leading-7 text-gray-400">Add products to your personal list and let us do
-                                the
-                                stock monitoring for you.</dd>
-                        </div>
-                    </dl>
-                </div>
-            </div>
+  <div class="relative isolate overflow-hidden">
+    <svg
+      class="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+      aria-hidden="true">
+      <defs>
+        <pattern id="0787a7c5-978c-4f66-83c7-11c213f99cb7" width="200" height="200" x="50%" y="-1"
+          patternUnits="userSpaceOnUse">
+          <path d="M.5 200V.5H200" fill="none" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" stroke-width="0" fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" />
+    </svg>
+    <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-24">
+      <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
+        <div class="mt-24 sm:mt-32 lg:mt-16">
+          <Badge>
+            Stay Ahead of the Crowd
+          </Badge>
         </div>
-        <div class="absolute left-1/2 top-0 -z-10 -translate-x-1/2 blur-3xl xl:-top-6" aria-hidden="true">
-            <div class="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
-                style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" />
+        <h1 class="mt-10 text-4xl font-bold tracking-tight  sm:text-6xl">Get Instant Stock Updates for
+          Unifi Products</h1>
+        <p class="mt-6 text-lg leading-8">Sign up, add the Unifi products you want, and get a
+          text the moment they are available again. No more checking stock manually.</p>
+        <div class="mt-10 flex items-center gap-x-6" v-if="!login">
+          <AddStock>
+            <template #trigger>
+              <Button>Start Tracking</Button>
+            </template>
+          </AddStock>
+          <Button variant="outline" @click="login = true">
+            Login
+          </Button>
         </div>
+        <div class="mt-10 flex items-center gap-x-6" v-else>
+          <Login />
+        </div>
+      </div>
+      <div class="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
+        <div class="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
+          <div
+            class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
+            <ProductScreenshot />
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>

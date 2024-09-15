@@ -7,8 +7,12 @@ import {
     TabsTrigger,
 } from '@/components/ui/tabs'
 import { PlusCircle } from 'lucide-vue-next'
+import type { Product } from '~/types/unifi';
+import { useTimeAgo } from '@vueuse/core'
 const notifyCount = useNotifyCount()
 const products = useProducts();
+const { addProduct } = useAddProduct()
+
 useSeoMeta({
     titleTemplate(title) {
         return `${title} - Stock`
@@ -19,7 +23,7 @@ const client = useSupabaseClient()
 const { data: product, error, refresh, status } = await useAsyncData('products', async () => {
     const { data } = await client.from('products').select('*').order('created_at', { ascending: false })
     notifyCount.value = data?.filter(data => data.notify).length || 0;
-    products.value = data;
+    products.value.products = data;
     return data
 })
 
@@ -42,12 +46,24 @@ async function refreshProducts() {
     await refresh()
 };
 
+async function handleAddProduct(product: Product) {
+    await addProduct(product)
+    await refresh()
+}
+
 provide('refreshProducts', refreshProducts);
 
 const inStock = computed(() => product.value?.filter((item) => item.in_stock && !item.last_text_date))
 const soldOut = computed(() => product.value?.filter((item) => !item.in_stock && !item.last_text_date))
-const complete = computed(() => product.value?.filter((item) => item.last_text_date))
 
+function lastCheckedAt() {
+    if (product.value) {
+        const firstProduct = product.value[0];
+        if(firstProduct?.last_checked_date){
+            return useTimeAgo(firstProduct?.last_checked_date);
+        }
+    }
+}
 </script>
 
 <template>
@@ -58,7 +74,8 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                     <div class="flex items-center space-x-4">
                         <h1 class="scroll-m-20 text-4xl font-bold tracking-tight">Products</h1>
                     </div>
-                    <p class="text-lg text-muted-foreground">Displays a callout for user attention.</p>
+                    <p class="text-lg text-muted-foreground" v-if="product">Last Checked:
+                        {{ lastCheckedAt() }}</p>
                 </div>
                 <Tabs default-value="all" class="overflow-hidden">
                     <div class="flex items-center">
@@ -75,7 +92,7 @@ const complete = computed(() => product.value?.filter((item) => item.last_text_d
                         </TabsList>
                         <div class="ml-auto flex items-center gap-2">
                             <ClientOnly>
-                                <AddStock>
+                                <AddStock @submit="handleAddProduct">
                                     <template #trigger>
                                         <Button size="sm" class="h-7 gap-1">
                                             <PlusCircle class="h-3.5 w-3.5" />

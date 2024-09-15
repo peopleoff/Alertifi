@@ -2,6 +2,43 @@
 import { CircleUser } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+const user = useSupabaseUser()
+const client = useSupabaseClient()
+
+function formatPhoneNumber(phoneNumber: string | number): string {
+    // Convert the input to a string and remove all non-digit characters
+    const cleaned = phoneNumber.toString().replace(/\D/g, '');
+
+    // Check if the phone number includes the country code (assumed to be '1' for the US)
+    let trimmed = cleaned;
+    if (cleaned.length === 11 && cleaned.startsWith('1')) {
+        trimmed = cleaned.slice(1);
+    }
+
+    // Validate that the remaining number has 10 digits
+    if (trimmed.length !== 10) {
+        throw new Error('Invalid phone number length.');
+    }
+
+    // Extract area code, central office code, and line number
+    const areaCode = trimmed.slice(0, 3);
+    const centralOfficeCode = trimmed.slice(3, 6);
+    const lineNumber = trimmed.slice(6);
+
+    // Format the phone number
+    return `(${areaCode}) ${centralOfficeCode}-${lineNumber}`;
+}
+
+async function logout() {
+    try {
+        await client.auth.signOut();
+        await navigateTo('/');
+    } catch (error) {
+        console.error(error);
+    }
+
+}
+
 </script>
 
 <template>
@@ -13,7 +50,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
             </a>
         </nav>
         <div class="flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-            <DropdownMenu>
+            <ColorMode />
+            <DropdownMenu v-if="user">
                 <DropdownMenuTrigger as-child>
                     <Button variant="secondary" size="icon" class="rounded-full">
                         <CircleUser class="h-5 w-5" />
@@ -21,12 +59,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>{{ formatPhoneNumber(user?.phone!) }}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Support</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem @click="logout">Logout</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

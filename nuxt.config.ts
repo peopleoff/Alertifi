@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       callback: "/verify",
       login: "/",
+      exclude: ["/"],
     },
   },
   sentry: {

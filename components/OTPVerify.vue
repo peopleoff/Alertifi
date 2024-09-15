@@ -28,8 +28,6 @@ useSeoMeta({
 const { toast } = useToast()
 const supabase = useSupabaseClient()
 const route = useRoute()
-const { addProduct } = useAddProduct()
-const productState = useProducts();
 const phone = route.query.phone
 const loading = ref(false);
 const formSchema = toTypedSchema(z.object({
@@ -57,10 +55,6 @@ async function verify(code: string) {
         type: 'sms',
     })
     if (!error) {
-        const product = productState.value.tempProduct;
-        if (product) {
-            await addProduct(product);
-        }
         await navigateTo('/stock')
     }
     else {

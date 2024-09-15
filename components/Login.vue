@@ -37,7 +37,6 @@ const onSubmit = form.handleSubmit(async (values) => {
 })
 
 
-
 const signInWithOtp = async (phoneNumber: string) => {
     const { error } = await supabase.auth.signInWithOtp({
         phone: `+1${phoneNumber}`,
@@ -57,11 +56,11 @@ const signInWithOtp = async (phoneNumber: string) => {
 </script>
 <template>
     <form @submit="onSubmit" class="w-full">
-        <div class="flex w-full max-w-sm items-center gap-1.5">
+        <div class="flex w-full items-center gap-4">
             <FormField v-slot="{ componentField }" name="phone">
                 <FormItem class="w-full">
                     <FormControl>
-                        <Input id="phone" class="text-white" type="tel" placeholder="(941)-234-3432"
+                        <Input id="phone" type="tel" placeholder="(941)-234-3432"
                             autocomplete="mobile" v-bind="componentField" v-maska="'(###)-###-####'" />
                     </FormControl>
                     <FormMessage class="absolute pl-1" />

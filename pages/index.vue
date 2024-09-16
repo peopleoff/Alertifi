@@ -1,6 +1,14 @@
 <script setup lang="ts">
-
+const user = useSupabaseUser()
 const login = ref(false);
+
+async function toggleLogin(){
+  if(user.value){
+    await navigateTo('/stock');
+  }else{
+    login.value = true;
+  }
+}
 </script>
 
 <template>
@@ -33,12 +41,12 @@ const login = ref(false);
               <Button>Start Tracking</Button>
             </template>
           </AddStock>
-          <Button variant="outline" @click="login = true">
+          <Button variant="outline" @click="toggleLogin">
             Login
           </Button>
         </div>
         <div class="mt-10 flex items-center gap-x-6" v-else>
-          <Login />
+          <Login text="Login" />
         </div>
       </div>
       <div class="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">

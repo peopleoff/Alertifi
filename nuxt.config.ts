@@ -9,6 +9,8 @@ export default defineNuxtConfig({
     "@nuxtjs/color-mode",
     "@nuxtjs/supabase",
     "@sentry/nuxt/module",
+    "@nuxt/image",
+    "nuxt-gtag",
   ],
   shadcn: {
     prefix: "",
@@ -31,5 +33,8 @@ export default defineNuxtConfig({
       authToken:
         "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",
     },
+  },
+  gtag: {
+    id: "G-WNCXB1Q2WC",
   },
 });

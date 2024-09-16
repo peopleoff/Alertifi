@@ -15,6 +15,13 @@ import { useToast } from '@/components/ui/toast/use-toast'
 const { toast } = useToast()
 const supabase = useSupabaseClient()
 
+interface Props {
+    text?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    text: 'Notify Me',
+})
 
 const loading = ref(false);
 
@@ -60,15 +67,15 @@ const signInWithOtp = async (phoneNumber: string) => {
             <FormField v-slot="{ componentField }" name="phone">
                 <FormItem class="w-full">
                     <FormControl>
-                        <Input id="phone" type="tel" placeholder="(941)-234-3432"
-                            autocomplete="mobile" v-bind="componentField" v-maska="'(###)-###-####'" />
+                        <Input id="phone" type="tel" placeholder="(941)-234-3432" autocomplete="mobile"
+                            v-bind="componentField" v-maska="'(###)-###-####'" />
                     </FormControl>
                     <FormMessage class="absolute pl-1" />
                 </FormItem>
             </FormField>
             <Button type="submit" class="w-28" :disabled="loading">
                 <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-                Start Today
+                {{ text }}
             </Button>
 
         </div>

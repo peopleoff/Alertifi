@@ -13,6 +13,7 @@
     "generate:types": "supabase gen types --lang=typescript --project-id ryojkcxgeakcgnckdmkh > types/database.types.ts"
   },
   "dependencies": {
+    "@nuxt/image": "^1.8.0",
     "@nuxtjs/supabase": "^1.4.0",
     "@sentry/nuxt": "^8.30.0",
     "@supabase/supabase-js": "^2.45.4",
@@ -26,6 +27,7 @@
     "maska": "^3.0.2",
     "node-html-parser": "^6.1.13",
     "nuxt": "^3.13.0",
+    "nuxt-gtag": "^3.0.1",
     "radix-vue": "^1.9.5",
     "shadcn-nuxt": "^0.10.4",
     "tailwind-merge": "^2.5.2",

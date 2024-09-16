@@ -55,7 +55,7 @@ async function verify(code: string) {
         type: 'sms',
     })
     if (!error) {
-        await navigateTo('/stock')
+        await navigateTo('/products')
     }
     else {
         loading.value = false;

@@ -59,7 +59,7 @@ const soldOut = computed(() => product.value?.filter((item) => !item.in_stock &&
 function lastCheckedAt() {
     if (product.value) {
         const firstProduct = product.value[0];
-        if(firstProduct?.last_checked_date){
+        if (firstProduct?.last_checked_date) {
             return useTimeAgo(firstProduct?.last_checked_date);
         }
     }
@@ -108,9 +108,11 @@ function lastCheckedAt() {
                     <TabsContent value="all">
                         <Card>
                             <CardHeader>
-                                <CardTitle>All Products</CardTitle>
+                                <CardTitle>Product Availability</CardTitle>
                                 <CardDescription>
-                                    Manage your products and view their sales performance.
+                                    View current stock status and select the UniFi products you want to be notified
+                                    about when they’re back
+                                    in stock.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>

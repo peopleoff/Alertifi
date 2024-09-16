@@ -44,12 +44,12 @@ async function logout() {
 <template>
     <header class="sticky top-0 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6 z-10">
         <nav class="flex-col gap-6 text-lg font-medium flex items-center md:gap-5 md:text-sm lg:gap-6">
-            <a href="#" class="flex items-center gap-2 text-lg font-semibold md:text-base">
-                <img src="/favicon.ico" class="h-8 w-8" />
-                <span>Unifi Checker</span>
-            </a>
+            <NuxtLink to='/products' class="flex items-center gap-2 text-lg font-semibold md:text-base">
+                    <img src="/logo.png" class="h-8 w-8" />
+                    <span>Alertifi</span>
+            </NuxtLink>
         </nav>
-        <div class="flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+        <div class="flex items-center gap-4 md:ml-auto">
             <ColorMode />
             <DropdownMenu v-if="user">
                 <DropdownMenuTrigger as-child>

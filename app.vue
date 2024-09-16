@@ -2,15 +2,15 @@
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { ConfigProvider } from 'radix-vue';
 useSeoMeta({
-  title: 'Ubiquiti  Stock Checker',
+  title: 'Alertifi',
   description: 'Check the stock of Ubiquiti  products and get notified when they are in stock.',
-  ogTitle: 'Ubiquiti  Stock Checker',
+  ogTitle: 'Alertifi',
   ogDescription: 'Check the stock of Ubiquiti  products and get notified when they are in stock.',
-  ogImage: 'https://unifiview.netlify.app/og-image.png',
-  ogUrl: 'https://unifiview.netlify.app',
-  twitterTitle: 'Ubiquiti  Stock Checker',
+  ogImage: 'https://alertifi.io/og-image.png',
+  ogUrl: 'https://alertifi.io',
+  twitterTitle: 'Alertifi',
   twitterDescription: 'Check the stock of Ubiquiti  products and get notified when they are in stock.',
-  twitterImage: 'https://unifiview.netlify.app/og-image.png',
+  twitterImage: 'https://alertifi.io/og-image.png',
   twitterCard: 'summary'
 })
 

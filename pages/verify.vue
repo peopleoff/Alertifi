@@ -61,7 +61,7 @@ async function verify(code: string) {
         if (product) {
             await addProduct(product);
         }
-        await navigateTo('/stock')
+        await navigateTo('/products')
     }
     else {
         loading.value = false;

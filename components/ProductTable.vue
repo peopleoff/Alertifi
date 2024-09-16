@@ -93,11 +93,11 @@ function inNull(value: any) {
                 <TableHead class="hidden w-[100px] sm:table-cell">
                     <span class="sr-only">img</span>
                 </TableHead>
-                <TableHead>Name</TableHead>
+                <TableHead class="min-w-[140px]">Name</TableHead>
                 <TableHead class="hidden md:table-cell">
                     Price
                 </TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead class="min-w-[120px]">Status</TableHead>
                 <TableHead class="table-cell">
                     Notify Me
                 </TableHead>

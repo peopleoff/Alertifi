@@ -79,84 +79,59 @@ const itemAlreadyInProducts = computed(() => {
 </script>
 
 <template>
-    <FooterTemplate>
-        <div class="w-full" v-if="user">
-            <Button type="submit" class="w-full" :disabled="loading || itemAlreadyInProducts" @click="addProduct">
-                <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-                {{ itemAlreadyInProducts ? 'Item Already Added' : 'Add' }}
-            </Button>
-        </div>
-        <Login v-else />
-    </FooterTemplate>
-    <UseTemplate>
-        <form @submit="onSubmit">
-            <Input type="text" class="hidden" />
-            <FormField v-slot="{ componentField }" name="url" :validate-on-blur="false">
-                <FormItem>
-                    <FormLabel>Product Url</FormLabel>
-                    <div class="flex gap-4">
-                        <FormControl>
-                            <Input type="text"
-                                placeholder="https://store.ui.com/us/en/category/digital-signage/products/uc-display21"
-                                v-bind="componentField" @paste="handlePaste" @focus="$event.target.select()" />
-                        </FormControl>
-                        <Button type="submit" :disabled="loading">
-                            Check Item
-                        </Button>
-                    </div>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
-        </form>
-        <Alert class="mt-6" v-if="!result && notifyCount >= 3 && !loading">
-            <Terminal class="h-4 w-4" />
-            <AlertTitle>Heads up!</AlertTitle>
-            <AlertDescription>
-                You've reached your notification limit. The product will be added but won't notify. Upgrade for
-                unlimited notifications!
-            </AlertDescription>
-        </Alert>
-        <Product v-if="result" :product="result" :loading="loading" />
-        <SkeletonProduct v-else-if="loading" />
-    </UseTemplate>
-
-    <Dialog v-if="isDesktop" v-model:open="open" @update:open="reset">
+    <Dialog>
         <DialogTrigger as-child>
             <slot name="trigger" />
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent class="sm:max-w-[80vw]">
             <DialogHeader>
                 <DialogTitle>Add Product URL</DialogTitle>
                 <DialogDescription>
                     Paste in the unifi product url
                 </DialogDescription>
             </DialogHeader>
-            <div>
-                <GridForm />
+            <div class="min-h-[50vh] md:min-h-[20vh]">
+                <form @submit="onSubmit">
+                    <Input type="text" class="hidden" />
+                    <FormField v-slot="{ componentField }" name="url" :validate-on-blur="false">
+                        <FormItem>
+                            <FormLabel>Product Url</FormLabel>
+                            <div class="flex gap-4">
+                                <FormControl>
+                                    <Input type="text"
+                                        placeholder="https://store.ui.com/us/en/category/digital-signage/products/uc-display21"
+                                        v-bind="componentField" @paste="handlePaste" @focus="$event.target.select()" />
+                                </FormControl>
+                                <Button type="submit" :disabled="loading">
+                                    Check Item
+                                </Button>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    </FormField>
+                </form>
+                <Alert class="mt-6" v-if="!result && notifyCount >= 3 && !loading">
+                    <Terminal class="h-4 w-4" />
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>
+                        You've reached your notification limit. The product will be added but won't notify. Upgrade
+                        for
+                        unlimited notifications!
+                    </AlertDescription>
+                </Alert>
+                <Product v-if="result" :product="result" :loading="loading" />
+                <SkeletonProduct v-else-if="loading" />
             </div>
-            <DialogFooter class="w-full" v-if="result">
-                <UseFooterTemplate />
+            <DialogFooter>
+                <div class="w-full" v-if="user">
+                    <Button type="submit" class="w-full" :disabled="loading || itemAlreadyInProducts"
+                        @click="addProduct">
+                        <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+                        {{ itemAlreadyInProducts ? 'Item Already Added' : 'Add' }}
+                    </Button>
+                </div>
+                <Login v-else />
             </DialogFooter>
         </DialogContent>
     </Dialog>
-
-    <Drawer v-else v-model:open="open" @update:open="reset">
-        <DrawerTrigger as-child>
-            <slot name="trigger" />
-        </DrawerTrigger>
-        <DrawerContent class="min-h-[75vh]">
-            <DrawerHeader>
-                <DrawerTitle>Add Product URL</DrawerTitle>
-                <DrawerDescription>
-                    Paste in the unifi product url
-                </DrawerDescription>
-            </DrawerHeader>
-            <div class="px-4">
-                <GridForm />
-            </div>
-            <DrawerFooter>
-                <UseFooterTemplate />
-            </DrawerFooter>
-        </DrawerContent>
-    </Drawer>
 </template>

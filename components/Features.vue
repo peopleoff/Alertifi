@@ -29,7 +29,7 @@ const features = [
                 <h2 class="text-base font-semibold leading-7 text-primary">Stay Ahead</h2>
                 <p class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl text-secondary">Smart Alerts, Simplified
                 </p>
-                <p class="mt-6 text-lg leading-8 text-gray-600">Experience instant alerts, tailored notifications, and
+                <p class="mt-6 text-lg leading-8 text-muted-foreground">Experience instant alerts, tailored notifications, and
                     an easy-to-use platform that keeps you informed on UniFi product availability.</p>
             </div>
             <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -39,7 +39,7 @@ const features = [
                             <component :is="feature.icon" class="h-5 w-5 flex-none text-primary" aria-hidden="true" />
                             {{ feature.name }}
                         </dt>
-                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
                             <p class="flex-auto">{{ feature.description }}</p>
                         </dd>
                     </div>

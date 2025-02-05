@@ -70,10 +70,6 @@ const signInWithOtp = async (phoneNumber: string) => {
                         <Input id="phone" type="tel" placeholder="(941)-234-3432" autocomplete="mobile"
                             v-bind="componentField" v-maska="'(###)-###-####'" />
                     </FormControl>
-                    <FormDescription>
-                        By entering your phone number, you agree to receive SMS messages for authentication and product
-                        notifications from Alertifi.io. Message and data rates may apply.
-                    </FormDescription>
                     <FormMessage class="absolute pl-1" />
                 </FormItem>
             </FormField>
@@ -81,7 +77,10 @@ const signInWithOtp = async (phoneNumber: string) => {
                 <Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
                 {{ text }}
             </Button>
-
         </div>
+        <p class="text-sm text-muted-foreground p-2">
+            By entering your phone number, you agree to receive SMS messages for authentication and product
+            notifications from Alertifi.io. Message and data rates may apply.
+        </p>
     </form>
 </template>

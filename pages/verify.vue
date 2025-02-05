@@ -73,6 +73,10 @@ async function verify(code: string) {
         });
     }
 }
+
+function formatPhoneNumber(phone: string) {
+    return phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+}
 </script>
 
 <template>
@@ -84,7 +88,7 @@ async function verify(code: string) {
                         Verify Phone Number
                     </CardTitle>
                     <CardDescription>
-                        Enter the code sent to <span class="font-bold">{{ phone }}</span> to verify your phone number.
+                        Enter the code sent to <span class="font-bold">{{ formatPhoneNumber(phone) }}</span> to verify your phone number.
                     </CardDescription>
                 </CardHeader>
                 <CardContent class="grid gap-4">

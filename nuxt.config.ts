@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       callback: "/verify",
       login: "/",
-      exclude: ["/"],
+      exclude: ["/privacy-policy", "/terms-of-use"],
     },
   },
   sentry: {

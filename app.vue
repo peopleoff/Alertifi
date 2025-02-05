@@ -36,6 +36,7 @@ const useIdFunction = () => useId() || '';
       <NuxtPage />
       <Toaster />
     </div>
+    <Footer />
   </ConfigProvider>
 </template>
 

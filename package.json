@@ -8,14 +8,13 @@
     "host": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "start": "node --import .output/public/instrument.server.mjs .output/server/index.mjs",
+    "start": "node .output/server/index.mjs",
     "postinstall": "nuxt prepare",
-    "generate:types": "supabase gen types --lang=typescript --project-id ryojkcxgeakcgnckdmkh > types/database.types.ts"
+    "generate:types": "supabase gen types --lang=typescript --project-id your-project-id > types/database.types.ts"
   },
   "dependencies": {
     "@nuxt/image": "^1.8.0",
     "@nuxtjs/supabase": "^1.4.0",
-    "@sentry/nuxt": "^8.30.0",
     "@supabase/supabase-js": "^2.45.4",
     "@vee-validate/zod": "^4.13.2",
     "@vueuse/core": "^11.0.3",
